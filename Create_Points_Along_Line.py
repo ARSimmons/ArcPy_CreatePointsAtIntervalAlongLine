@@ -31,12 +31,12 @@ def createPointsAtInterval(inLine, interval, shortestLineLength):
             length = row[0]
             # measures length of the line, determines number of point intervals
             numIntervals = int(math.floor(length / interval))
-            lastSegLength = length - interval * numIntervals
             for x in range(1, numIntervals):
                 # newPt = row[1].positionAlongLine(.50,True).firstPoint
                 newPt = row[1].positionAlongLine(interval * x)
                 icursor.insertRow((newPt,))
-            # if line length is greater then shortestlin only create one endpoint
+            # if line length is greater then shortest
+            # line only create one endpoint
             # otherwise leave blank
             if length > shortestLineLength:
                 lastPt = row[1].positionAlongLine(interval * numIntervals)
