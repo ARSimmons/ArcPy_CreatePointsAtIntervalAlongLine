@@ -19,7 +19,7 @@ from arcpy import env
 import math
 
 ## declare your env.workspace as the geodatabase you are working in
-env.workspace = r'F:\Tableau\It_17\RoadShields_92867\Test_Python\Test_py_1.gdb'
+env.workspace = r'<geodatabase>'
 
 def createPointsAtInterval(inLine, interval, shortestLineLength):
     sr = arcpy.Describe(inLine).spatialReference
