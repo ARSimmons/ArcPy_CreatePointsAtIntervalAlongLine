@@ -3,7 +3,7 @@
 ## GIS Data Engineer                         ##
 ## Tableau Software                          ##
 ## Date created: December 25, 2013           ##
-## Date modified: December 28, 2013          ##
+## Date modified: December 30, 2013          ##
 ###############################################
 
 ## This script is to create points at specific intervals
@@ -19,7 +19,7 @@ from arcpy import env
 import math
 
 ## declare your env.workspace as the geodatabase you are working in
-env.workspace = r'F:\Tableau\It_17\RoadShields_92867\Test_Python\Test_py_1.gdb'
+env.workspace = r'<database>'
 
 def createPointsAtInterval(inLine, interval, shortestLineLength):
     sr = arcpy.Describe(inLine).spatialReference
@@ -28,19 +28,22 @@ def createPointsAtInterval(inLine, interval, shortestLineLength):
     icursor = arcpy.da.InsertCursor(segPts, ('SHAPE@'))
     with arcpy.da.SearchCursor(inLine, ("SHAPE@LENGTH", "SHAPE@")) as cursor:
         for row in cursor:
+            # row is a tuple - containing  "SHAPE@LENGTH" and "SHAPE"
             length = row[0]
             # measures length of the line, determines number of point intervals
             numIntervals = int(math.floor(length / interval))
-            for x in range(1, numIntervals):
+            for x in range(1, numIntervals + 1):
                 # newPt = row[1].positionAlongLine(.50,True).firstPoint
                 newPt = row[1].positionAlongLine(interval * x)
                 icursor.insertRow((newPt,))
-            # if line length is greater then shortest
-            # line only create one endpoint
-            # otherwise leave blank
-            if length > shortestLineLength:
-                lastPt = row[1].positionAlongLine(interval * numIntervals)
-                icursor.insertRow((lastPt,))
+            # if line length is greater then 'shortestLineLength'
+            # (but smaller then the 'interval' - because if
+            # length < interval then 'numIntervals' = 0) then shortest
+            # line will only create one midpoint
+            # if shorter - leave blank
+            if length > shortestLineLength and numIntervals < 2:
+                midpoint = row[1].positionAlongLine(.50,True).firstPoint
+                icursor.insertRow((midpoint,))
     return segPts
 
         
